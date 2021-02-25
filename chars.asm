@@ -2,22 +2,17 @@
 
         org     $4000
 
-txtscr  equ     $0400           ; Text screen
-inkey   equ     $8006
+key     equ     $852b
 cls     equ     $ba77
 
-begin   ldx     #txtscr
+begin   ldx     #$0400          ; Text screen start
+        ldy     #$0600          ; Text screen end
         lda     #$80            ; -128
 
-incloop sta     ,x+
+loop    sta     ,x+             ; From the start
+        sta     ,-y             ; From the end
         inca
-        bvc     incloop         ; Loop until overflow
+        bvc     loop            ; Loop until overflow
 
-decloop deca                    ; Then reverse
-        sta     ,x+
-        cmpa    #$80
-        bne     decloop
-
-end     jsr     inkey
-        beq     end
-        jmp     cls
+end     jsr     key             ; Wait for key press
+        jmp     cls             ; Done
